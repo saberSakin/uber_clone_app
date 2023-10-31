@@ -8,8 +8,6 @@ mapboxgl.accessToken =
   "pk.eyJ1Ijoic2FiZXJ0b290aDkxNTMiLCJhIjoiY2xvZDlqYncyMDVhdDJxcDl1MjExZ2xiZCJ9.UcJ5o-jece5CN3ud748fJg";
 
 const Map = (props) => {
-  console.log(props);
-
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: "map",
@@ -42,5 +40,4 @@ const Map = (props) => {
 export default Map;
 
 const Wrapper = tw.div`
-flex-1
-`;
+flex-1 h-1/2`;
