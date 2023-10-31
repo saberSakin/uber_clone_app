@@ -1,4 +1,4 @@
-import { Profiler, useEffect } from "react";
+import { Profiler, useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
@@ -6,11 +6,31 @@ import tw from "tailwind-styled-components";
 import Map from "./components/Map";
 import mapboxgl from "mapbox-gl";
 import Link from "next/Link";
+import { auth } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/router";
 
 mapboxgl.accessToken =
   "pk.eyJ1Ijoic2FiZXJ0b290aDkxNTMiLCJhIjoiY2xvZDlqYncyMDVhdDJxcDl1MjExZ2xiZCJ9.UcJ5o-jece5CN3ud748fJg";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser({
+          name: user.displayName,
+          photoUrl: user.photoURL,
+        });
+      } else {
+        setUser(null);
+        router.push("/login");
+      }
+    });
+  }, []);
+
   return (
     <Wrapper>
       <Map id="map">Map</Map>
@@ -19,8 +39,11 @@ export default function Home() {
         <Header>
           <UberLogo src="https://logos-download.com/wp-content/uploads/2017/11/Uber_Logo_2018.png" />
           <Profile>
-            <Name>Saber Sakin</Name>
-            <UserImage src="https://avatars.githubusercontent.com/u/88105549?v=4" />
+            <Name>{user && user.name}</Name>
+            <UserImage
+              src={user && user.photoUrl}
+              onClick={() => signOut(auth)}
+            />
           </Profile>
         </Header>
         <ActionButtons>
@@ -68,7 +91,7 @@ const Name = tw.div`
 mr-4 w-20 text-sm
 `;
 const UserImage = tw.img`
-h-12 w-12 rounded-full border-gray-200 p-px
+h-12 w-12 rounded-full border-gray-200 p-px cursor-pointer
 `;
 const ActionButtons = tw.div`
 flex
